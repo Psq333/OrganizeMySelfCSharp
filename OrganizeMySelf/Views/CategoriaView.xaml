@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="OrganizeMySelf.Views.CategoriaView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OrganizeMySelf.Views"
+             xmlns:vm="clr-namespace:OrganizeMySelf.ViewModels"
+             mc:Ignorable="d" 
+             Height="auto" Width="auto"
+             d:DataContext="{d:DesignInstance vm:CategoriaViewModel}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="130" Width="auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <ListBox Grid.Column="0" MinHeight="200" ItemsSource="{Binding Path=Types}" Margin="8" DisplayMemberPath="Type"/>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="8">
+            <TextBox Height="20" MinWidth="100" Margin="4" Text="{Binding Path=NewType}"/>
+            <Button Height="20" Width="auto" Content="Aggiungi" Margin="4" Command="{Binding Path=AddTypeCommand}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

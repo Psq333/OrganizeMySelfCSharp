@@ -1,0 +1,68 @@
+﻿<Window x:Class="OrganizeMySelf.Views.MainWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OrganizeMySelf.Views"
+        xmlns:vm="clr-namespace:OrganizeMySelf.ViewModels"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        d:DataContext="{d:DesignInstance vm:MainWindowViewModel}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="200" Width="auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition MinHeight="340"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Vertical" Margin="8"
+                     Grid.Column="0" Grid.Row="0">
+            <DatePicker SelectedDate="{Binding Path=StartDate}"/>
+            <DatePicker SelectedDate="{Binding Path=EndDate}" Margin="0,8,0,0"/>
+        </StackPanel>
+        <StackPanel Grid.Column="0" Grid.Row="1">
+            <TextBlock Text="List Storage"  Margin="8" />
+
+            <ListBox  ItemsSource="{Binding Path=Items}" Height="280" MaxHeight="280"
+                     SelectedItem="{Binding Path=SelectedItem}" Margin="8">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Background="{Binding Path=Colore}">
+                            <TextBlock Text="{Binding Path=OnlyDate}" Margin="4,0,0,0"/>
+                            <TextBlock Text=" - "/>
+                            <TextBlock Text="{Binding Path=Inside}"/>
+                            <TextBlock Text=" - "/>
+                            <TextBlock Text="{Binding Path=Cash}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+
+        <ContentControl Grid.Column="1" Grid.Row="1" Margin="4" VerticalAlignment="Top"
+                        DataContext="{Binding Path=StorageVM}" Content="{Binding}">
+        </ContentControl>
+
+        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+
+            <Button Content="Aggiungi" Width="60" Height="30" Margin="10"
+                    Command="{Binding Path=AggiungiCommand}"/>
+            <Button Content="Elimina" Width="60" Height="30" Margin="10"
+                    Command="{Binding Path=EliminaCommand}"/>
+            <Button Content="Modifica" Width="60" Height="30" Margin="10"
+                    Command="{Binding Path=ModificaCommand}"/>
+            <Button Content="Analizza" Width="60" Height="30" Margin="10"
+                    Command="{Binding Path=AnalizzaCommand}"/>
+            <Button Content="Categoria" Width="60" Height="30" Margin="10"
+                    Command="{Binding Path=CategoriaCommand}"/>
+        </StackPanel>
+    </Grid>
+</Window>
