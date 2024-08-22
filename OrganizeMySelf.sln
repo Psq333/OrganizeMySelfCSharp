@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizeMySelf", "OrganizeMySelf\OrganizeMySelf.csproj", "{B45638BC-37C8-4FB3-8F8C-CFB0913B60AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizeMySelfAPI", "OrganizeMySelfAPI\OrganizeMySelfAPI.csproj", "{4CEBBA5D-6A9F-4F02-9B1B-7CF3C5E3BFEE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B45638BC-37C8-4FB3-8F8C-CFB0913B60AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B45638BC-37C8-4FB3-8F8C-CFB0913B60AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B45638BC-37C8-4FB3-8F8C-CFB0913B60AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B45638BC-37C8-4FB3-8F8C-CFB0913B60AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CEBBA5D-6A9F-4F02-9B1B-7CF3C5E3BFEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CEBBA5D-6A9F-4F02-9B1B-7CF3C5E3BFEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CEBBA5D-6A9F-4F02-9B1B-7CF3C5E3BFEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CEBBA5D-6A9F-4F02-9B1B-7CF3C5E3BFEE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {262D2C4B-0ECD-4915-B7A8-8DF9ED678ADF}
+	EndGlobalSection
+EndGlobal
