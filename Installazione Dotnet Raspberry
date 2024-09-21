@@ -1,0 +1,14 @@
+1) Scaricare file zip di dotnet-sdk sul tipo di microsoft
+2) Creare la cartella condivisa che conterrà il contenyto del file zip
+    sudo mkdir -p /usr/share/dotnet
+3) Estrarre il pacchetto
+    sudo tar -xzf dotnet-sdk-8.0.401-linux-arm64.tar.gz -C /usr/share/dotnet --strip-components=1
+4) Aggiungere la variabile di ambiente per accedere da ogni parte del SO
+    echo 'export DOTNET_ROOT=/usr/share/dotnet' >> ~/.bashrc
+    echo 'export PATH=$PATH:/usr/share/dotnet' >> ~/.bashrc
+5) Applica le modifiche ricaricando il profilo della shell
+    source ~/.bashrc
+6) Verificare l'installazione
+    dotnet --list-runtimes
+7) Avviare l'applicazione
+    ./applicazione
