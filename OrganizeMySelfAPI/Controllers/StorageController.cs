@@ -1,48 +1,117 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrganizeMySelfAPI.Models;
 using OrganizeMySelfAPI.BLL;
+using System.Collections.Generic;
+using System.Net;
+using OrganizeMySelfAPI.Utilities;
+using log4net;
+using OrganizeMySelfAPI.DAL;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace OrganizeMySelfAPI.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class StorageController : ControllerBase
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(StorageController));
         // GET: api/<StorageController>
         [HttpGet]
-        public ActionResult<List<StorageModel>> Get()
+        public JsonResult Get()
         {
-            return Ok(StorageBLL.GetStorages());
+            try
+            {
+                return JsonResponse.JsonResponsePackage(
+                    StorageBLL.GetStorages(), 
+                    HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message, ex);
+                return JsonResponse.JsonResponsePackage(
+                    "Errore durante la lettura degli elementi", 
+                    HttpStatusCode.InternalServerError);
+            }
         }
 
         // GET api/<StorageController>/5
         [HttpGet("{id}")]
-        public ActionResult Get(int id)
+        public JsonResult Get(int id)
         {
-            return Ok(StorageBLL.GetStorage(id));
+            try
+            {
+                return JsonResponse.JsonResponsePackage(
+                    StorageBLL.GetStorage(id),
+                    HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message, ex);
+                return JsonResponse.JsonResponsePackage(
+                    "Errore durante la lettura dell'elemento",
+                    HttpStatusCode.InternalServerError);
+            }
         }
 
         // POST api/<StorageController>
         [HttpPost]
-        public ActionResult Insert(StorageModel storage)
+        public JsonResult Insert(StorageModel storage)
         {
-            return Ok(StorageBLL.InsertStorages(storage));
+            try
+            {
+                return JsonResponse.JsonResponsePackage(
+                    StorageBLL.InsertStorages(storage),
+                    HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message, ex);
+                return JsonResponse.JsonResponsePackage(
+                    "Errore durante l'inserimento dell'elemento",
+                    HttpStatusCode.InternalServerError);
+            }
         }
 
-        // PUT api/<StorageController>/5
+        //PUT api/<StorageController>/5
         [HttpPut]
-        public ActionResult Update(StorageModel storage)
+        public JsonResult Update(StorageModel storage)
         {
-            return Ok(StorageBLL.UpdateStorages(storage));
+            try
+            {
+                StorageBLL.UpdateStorages(storage);
+                return JsonResponse.JsonResponsePackage(
+                    "Elemento modificato correttamente",
+                    HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message, ex);
+                return JsonResponse.JsonResponsePackage(
+                    "Errore durante la modifica dell'elemento",
+                    HttpStatusCode.InternalServerError);
+            }
         }
 
         // DELETE api/<StorageController>/5
         [HttpDelete]
-        public ActionResult Delete(int id)
+        public JsonResult Delete(int id)
         {
-            return Ok(StorageBLL.DeleteStorages(id));
+            try
+            {
+                StorageBLL.DeleteStorages(id);
+                return JsonResponse.JsonResponsePackage(
+                    "Elemento eliminato correttamente",
+                    HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex.Message, ex);
+                return JsonResponse.JsonResponsePackage(
+                    "Errore durante l'eliminazione dell'elemento",
+                    HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

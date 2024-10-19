@@ -16,7 +16,9 @@ namespace OrganizeMySelf.ViewModels
         public RelayCommand AddTypeCommand { get; set; }
         public String NewType { get; set; }
         public CategoriaViewModel(List<TypeModel> types) {
+            if(types != null)
             Types = new ObservableCollection<TypeModel>(types);
+            else Types = new ObservableCollection<TypeModel>();
             AddTypeCommand = new RelayCommand(AddTypeMethod);
         }
 

@@ -5,7 +5,9 @@ namespace OrganizeMySelfAPI.BLL
 {
     public class TypeBLL
     {
-        public static List<TypeModel> GetTypes() { return TypeDAL.GetTypes(); }
+        public static List<TypeModel> GetTypes() { 
+            return TypeDAL.GetTypes(); 
+        }
 
         public static TypeModel GetType(int id)
         {
@@ -14,17 +16,17 @@ namespace OrganizeMySelfAPI.BLL
 
         public static int InsertTypes(TypeModel insertType)
         {
-            return TypeDAL.InsertTypes(insertType);
+            return TypeDAL.InsertType(insertType);
         }
 
-        public static bool UpdateTypes(TypeModel insertType)
+        public static void UpdateTypes(TypeModel insertType)
         {
-            return TypeDAL.UpdateTypes(insertType);
+            TypeDAL.UpdateType(insertType);
         }
 
-        public static bool DeleteTypes(int id)
+        public static void DeleteTypes(int id)
         {
-            return TypeDAL.DeleteTypes(id);
+            TypeDAL.DeleteType(id);
         }
     }
 }

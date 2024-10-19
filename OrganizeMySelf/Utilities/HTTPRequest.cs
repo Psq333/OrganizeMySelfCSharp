@@ -1,8 +1,10 @@
-﻿using OrganizeMySelf.Models;
+﻿using Newtonsoft.Json;
+using OrganizeMySelf.Models;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,12 +16,25 @@ namespace OrganizeMySelf.Utilities
         {
             var client = new RestClient(path);
             var request = new RestRequest(classe, method);
-            if(method == Method.Post || method == Method.Put)
+
+            var response = client.Execute(request);
+
+            // Verifica lo status della risposta
+            if (response.StatusCode != HttpStatusCode.OK)
             {
-                request.AddParameter("application/json; charset=utf-8", jsonToSend, ParameterType.RequestBody);
-                request.RequestFormat = DataFormat.Json;
+                Console.WriteLine($"Error: {response.StatusCode} - {response.Content}");
+                return null;
             }
-            return client.Execute<List<T>>(request).Data;
+            else
+            {
+                Console.WriteLine($"Response Content: {response.Content}");
+
+                // Deserializza la risposta come ApiResponse<T>
+                var apiResponse = JsonConvert.DeserializeObject<APIResponse<List<T>>>(response.Content);
+
+                // Restituisci solo i dati
+                return apiResponse.Data;
+            }
         }
 
         public static int RequestPost(String path, String classe, Method method, T jsonToSend)
@@ -31,7 +46,20 @@ namespace OrganizeMySelf.Utilities
                 request.AddParameter("application/json", jsonToSend, ParameterType.RequestBody);
                 request.RequestFormat = DataFormat.Json;
             }
-            return client.Execute<int>(request).Data;
+            var x = JsonConvert.DeserializeObject<APIResponse<int>>(client.Execute(request).Content);
+            return x.Data;
+        }
+
+        public static bool RequestDelete(String path, String classe, Method method, int id)
+        {
+            var client = new RestClient(path);
+            var request = new RestRequest(classe, method);
+            if (method == Method.Delete)
+            {
+                request.AddParameter("id",id.ToString());
+                return client.Execute<bool>(request).Data;
+            }
+            return false;
         }
     }
 }

@@ -1,6 +1,6 @@
-@OrganizeMySelfAPI_HostAddress = http://localhost:5074
+@OrganizeMySelfAPI_HostAddress = http://0.0.0.0:5000
 
-GET {{OrganizeMySelfAPI_HostAddress}}/weatherforecast/
+GET {{OrganizeMySelfAPI_HostAddress}}/OrganizeMySelf/
 Accept: application/json
 
 ###

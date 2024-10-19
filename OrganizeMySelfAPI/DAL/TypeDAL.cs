@@ -1,20 +1,35 @@
 ﻿using OrganizeMySelfAPI.Models;
 using SqlCommandExample.Utilities;
-using System.Data.SqlClient;
+using MySqlConnector;
 using System.Data;
+using log4net;
+using OrganizeMySelfAPI.Controllers;
 
 namespace OrganizeMySelfAPI.DAL
 {
     public class TypeDAL
     {
-        private readonly static String LastId = "SELECT IDENT_CURRENT('Type') As LastID;";
+        private static readonly ILog log = LogManager.GetLogger(typeof(TypeDAL));
+
+        #region GetTypes
         public static List<TypeModel> GetTypes()
         {
-            String query = "SELECT * FROM [OrganizeMySelf].[dbo].[Type]";
-            List<TypeModel> storage = null;
-            using (SqlDataReader reader = SqlHelper.ExecuteReader(query, CommandType.Text))
+            try
             {
-                storage = new List<TypeModel>();
+                return getTypes();
+            }
+            catch (MySqlException e)
+            {
+                log.Error(e.Message, e);
+                throw new Exception("Errore durante l'inserimento del dato");
+            }
+        }
+        public static List<TypeModel> getTypes()
+        {
+            String query = "SELECT * FROM OrganizeMySelf.Type";
+            List<TypeModel> storage = new List<TypeModel>(); ;
+            using (MySqlDataReader reader = SqlHelper.ExecuteReader(query, CommandType.Text))
+            {
                 while (reader.Read())
                 {
                     storage.Add(new TypeModel()
@@ -26,14 +41,28 @@ namespace OrganizeMySelfAPI.DAL
             }
             return storage;
         }
+        #endregion
 
+        #region GetType
         public static TypeModel GetType(int id)
         {
-            String query = "SELECT * FROM [OrganizeMySelf].[dbo].[Type] WHERE id = @Id";
-            SqlParameter parameterId = new SqlParameter("@Id", SqlDbType.Int);
+            try
+            {
+                return getType(id);
+            }
+            catch (MySqlException e)
+            {
+                log.Error(e.Message, e);
+                throw new Exception("Errore durante l'inserimento del dato");
+            }
+        }
+        public static TypeModel getType(int id)
+        {
+            String query = "SELECT * FROM OrganizeMySelf.Type WHERE id = @Id";
+            MySqlParameter parameterId = new MySqlParameter("@Id", SqlDbType.Int);
             parameterId.Value = id;
-            TypeModel type = null;
-            using (SqlDataReader reader = SqlHelper.ExecuteReader(query, CommandType.Text, parameterId))
+            TypeModel type = new TypeModel();
+            using (MySqlDataReader reader = SqlHelper.ExecuteReader(query, CommandType.Text, parameterId))
             {
                 while (reader.Read())
                 {
@@ -44,50 +73,88 @@ namespace OrganizeMySelfAPI.DAL
                     };
                 }
             }
+            if (type.Id <= 0) throw new Exception("Elemento non trovato");
             return type;
         }
+        #endregion
 
-        public static int InsertTypes(TypeModel insertType)
+        #region InsertTypes
+        public static int InsertType(TypeModel insertTypeModel)
         {
-            String query = "INSERT INTO [OrganizeMySelf].[dbo].[Type] " +
-                "VALUES (@Type)" +
-                " SELECT IDENT_CURRENT('Type') As LastID;";
-            SqlParameter parameter = new SqlParameter("@Type", insertType.Type);
-            using (SqlDataReader reader = SqlHelper.ExecuteReader(query, CommandType.Text, parameter))
+            try
             {
-                return 0;
+                return insertType(insertTypeModel);
             }
-            return 0;
+            catch (MySqlException e)
+            {
+                log.Error(e.Message, e);
+                throw new Exception("Errore durante l'inserimento del dato");
+            }
         }
-
-        public static bool UpdateTypes(TypeModel updateType)
+        public static int insertType(TypeModel insertTypeModel)
         {
-            String query = "UPDATE [OrganizeMySelf].[dbo].[Type] " +
+            String query = "INSERT INTO OrganizeMySelf.Type " +
+                "VALUES (@Id, @Type); " +
+                "SELECT id FROM OrganizeMySelf.Type ORDER BY id desc LIMIT 1;";
+            MySqlParameter[] parameter = {
+                 new MySqlParameter("@Id", insertTypeModel.Id),
+                new MySqlParameter("@Type", insertTypeModel.Type)
+        };
+            int id = Convert.ToInt32(SqlHelper.ExecuteScalar(query, CommandType.Text, parameter));
+            if(id > 0) return id;
+            throw new Exception("Errore durante l'inserimento del tipo");
+        }
+        #endregion
+
+        #region UpdateTyeps
+        public static void UpdateType(TypeModel updateTypeModel)
+        {
+            try
+            {
+                updateType(updateTypeModel);
+            }
+            catch (MySqlException e)
+            {
+                log.Error(e.Message, e);
+                throw new Exception("Errore durante l'inserimento del dato");
+            }
+        }
+        public static void updateType(TypeModel updateTypeModel)
+        {
+            String query = "UPDATE OrganizeMySelf.Type " +
                 "SET type=@Type " +
                 "WHERE id=@Id";
-            SqlParameter[] parameters = [
-                new SqlParameter("@Type", updateType.Type),
-                new SqlParameter("@Id", updateType.Id)
+            MySqlParameter[] parameters = [
+                new MySqlParameter ("@Type", updateTypeModel.Type),
+                new MySqlParameter ("@Id", updateTypeModel.Id)
                 ];
-            StorageModel storage = null;
-            if (SqlHelper.ExecuteNonQuery(query, CommandType.Text, parameters) >= 1)
-            {
-                return true;
-            }
-            return false;
+            int row = SqlHelper.ExecuteNonQuery(query, CommandType.Text, parameters);
+            if (row <= 0) throw new Exception("Errore durante l'update del tipo");
         }
+        #endregion
 
-        public static bool DeleteTypes(int id)
+        #region DeleteType
+        public static void DeleteType(int id)
         {
-            String query = "DELETE FROM [OrganizeMySelf].[dbo].[Type] " +
-                "WHERE id = @Id";
-            SqlParameter parameter = new SqlParameter("@Id", id);
-            if (SqlHelper.ExecuteNonQuery(query, CommandType.Text, parameter) >= 1)
+            try
             {
-                return true;
+                deleteType(id);
             }
-            return false;
+            catch (MySqlException e)
+            {
+                log.Error(e.Message, e);
+                throw new Exception("Errore durante l'inserimento del dato");
+            }
         }
-        
+        public static void deleteType(int id)
+        {
+            String query = "DELETE FROM OrganizeMySelf.Type " +
+                "WHERE id = @Id";
+            MySqlParameter parameter = new MySqlParameter("@Id", id);
+            int row = SqlHelper.ExecuteNonQuery(query, CommandType.Text, parameter);
+            if (row <= 0) throw new Exception("Errore durante l'eliminazione del tipo");
+        }
+        #endregion
+
     }
 }

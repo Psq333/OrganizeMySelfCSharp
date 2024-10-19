@@ -25,7 +25,8 @@ namespace OrganizeMySelf.ViewModels
             AggiungiCommand = new RelayCommand(Add);
             ItemsInside = Enum.GetValues(typeof(InsideStorage)).Cast<InsideStorage>().ToList();
             ItemsType = types;
-            Type = ItemsType.First();
+            if(ItemsType != null)
+                Type = ItemsType.First();
         }
 
         public List<TypeModel> ItemsType { get; set; }
@@ -70,12 +71,22 @@ namespace OrganizeMySelf.ViewModels
             }
         }
 
-        public decimal Cash
+        public Double Cash
         {
             get =>  _storageModel.Cash;
             set
             {
                 _storageModel.Cash = value;
+                Notify();
+            }
+        }
+
+        public String Descrizione
+        {
+            get => _storageModel.Descrizione;
+            set
+            {
+                _storageModel.Descrizione = value;
                 Notify();
             }
         }
@@ -96,9 +107,15 @@ namespace OrganizeMySelf.ViewModels
                 Type = Type,
                 Cash = Cash,
                 Date = Date,
-                Inside = Inside
+                Inside = Inside,
+                Descrizione = Descrizione,
             };
-            ElementoAggiunto?.Invoke(storage);
+            int read = HTTPRequest<StorageModel>.RequestPost(PathClass.Path, PathClass.Storage, Method.Post, storage);
+            if (read > 0)
+            {
+                storage.Id = read;
+                ElementoAggiunto?.Invoke(storage);
+            }
         }
     }
 }

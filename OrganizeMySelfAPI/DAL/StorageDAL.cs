@@ -1,19 +1,33 @@
-﻿using OrganizeMySelfAPI.Models;
+﻿using log4net;
+using MySqlConnector;
+using OrganizeMySelfAPI.Models;
 using SqlCommandExample.Utilities;
-using System.Data.SqlClient;
 using System.Data;
-using System.ComponentModel;
 
 namespace OrganizeMySelfAPI.DAL
 {
     public class StorageDAL
     {
-        private readonly static String LastId = "SELECT IDENT_CURRENT('Storage')";
+        private static readonly ILog log = LogManager.GetLogger(typeof(StorageDAL));
+
+        #region GetStorages
         public static List<StorageModel> GetStorages()
         {
-            String query = "SELECT * FROM [OrganizeMySelf].[dbo].[Storage]";
-            List<StorageModel> storage = null;
-            using (SqlDataReader reader = SqlHelper.ExecuteReader(query, CommandType.Text))
+            try
+            {
+                return getStorages();
+            }
+            catch (MySqlException e)
+            {
+                log.Error(e.Message, e);
+                throw new Exception("Errore durante la lettura della lista");
+            }
+        }
+        public static List<StorageModel> getStorages()
+        {
+            String query = "SELECT * FROM OrganizeMySelf.Storage";
+            List<StorageModel> storage = new List<StorageModel>();
+            using (MySqlDataReader reader = SqlHelper.ExecuteReader(query, CommandType.Text))
             {
                 storage = new List<StorageModel>();
                 while (reader.Read())
@@ -24,90 +38,137 @@ namespace OrganizeMySelfAPI.DAL
                         Date = reader.GetDateTime(1),
                         Type = TypeDAL.GetType(reader.GetInt32(2)),
                         Inside = Enum.GetValues<InsideStorage>()[reader.GetInt32(3)],
-                        Cash = reader.GetDecimal(4),
+                        Cash = reader.GetDouble(4),
+                        Descrizione = reader.GetString(5),
                     });
                 }
             }
             return storage;
         }
+        #endregion
 
+        #region GetStorage
         public static StorageModel GetStorage(int id)
         {
-            String query = "SELECT * FROM [OrganizeMySelf].[dbo].[Storage] WHERE id = @Id";
-            SqlParameter parameter = new SqlParameter("@Id", id);
-            StorageModel storage = null;
-            using (SqlDataReader reader = SqlHelper.ExecuteReader(query, CommandType.Text,parameter))
+            try
             {
-                
+                return getStorage(id);
+            }
+            catch (MySqlException e)
+            {
+                log.Error(e.Message, e);
+                throw new Exception("Errore durante la lettura del dato");
+            }
+        }
+
+        public static StorageModel getStorage(int id)
+        {
+            String query = "SELECT * FROM OrganizeMySelf.Storage WHERE id = @Id";
+            MySqlParameter parameter = new MySqlParameter("@Id", id);
+            StorageModel storage = new StorageModel();
+            using (MySqlDataReader reader = SqlHelper.ExecuteReader(query, CommandType.Text, parameter))
+            {
+
                 while (reader.Read())
                 {
-                    InsideStorage inside;
-                    Enum.TryParse<InsideStorage>(reader.GetString(3), out inside);
-
                     storage = new StorageModel()
                     {
                         Id = reader.GetInt32(0),
                         Date = reader.GetDateTime(1),
                         Type = TypeDAL.GetType(reader.GetInt32(2)),
-                        Inside = inside,
-                        Cash = reader.GetDecimal(4),
+                        Inside = Enum.GetValues<InsideStorage>()[reader.GetInt32(3)],
+                        Cash = reader.GetDouble(4),
+                        Descrizione = reader.GetString(5),
                     };
                 }
             }
+            if (storage.Id <= 0) throw new Exception("Elemento non trovato");
             return storage;
         }
+        #endregion
 
+        #region InsertStorages
         public static int InsertStorages(StorageModel insertStorage)
         {
-            String query = "INSERT INTO [OrganizeMySelf].[dbo].[Storage] " +
-                "VALUES (@Date,@Id_Type,@Inside,@Cash);";
-            SqlParameter[] parameters = [
-                    new SqlParameter("@Date", insertStorage.Date),
-                    new SqlParameter("@Id_Type", insertStorage.Type.Id),
-                    new SqlParameter("@Inside", insertStorage.Inside),
-                    new SqlParameter("@Cash", insertStorage.Cash),
-                ];
-            StorageModel storage = null;
-            if (SqlHelper.ExecuteNonQuery(query, CommandType.Text, parameters) >= 1)
+            try
             {
-                using (SqlDataReader reader = SqlHelper.ExecuteReader(LastId, CommandType.Text))
-                {
-                    return reader.GetInt32(0);
-                }
+                return insertStorages(insertStorage);
             }
-            return 0;
+            catch (MySqlException e)
+            {
+                log.Error(e.Message, e);
+                throw new Exception("Errore durante l'inserimento del dato");
+            }
+        }
+        public static int insertStorages(StorageModel insertStorage)
+        {
+            String query = "INSERT INTO OrganizeMySelf.Storage " +
+                "VALUES (@Id, @Date,@Id_Type,@Inside,@Cash,@Descrizione); " +
+                "SELECT id FROM OrganizeMySelf.Storage ORDER BY id desc LIMIT 1;";
+            MySqlParameter[] parameters = [
+                new MySqlParameter("@Id", 0),
+                    new MySqlParameter("@Date", insertStorage.Date),
+                    new MySqlParameter("@Id_Type", insertStorage.Type.Id),
+                    new MySqlParameter("@Inside", insertStorage.Inside),
+                    new MySqlParameter("@Cash", insertStorage.Cash),
+                    new MySqlParameter("@Descrizione", insertStorage.Descrizione),
+                ];
+
+            int id = Convert.ToInt32(SqlHelper.ExecuteScalar(query, CommandType.Text, parameters));
+            return id;
+        }
+        #endregion
+
+        #region UpdateStorages
+        public static void updateStorages(StorageModel updateStorage)
+        {
+            try
+            {
+                UpdateStorages(updateStorage);
+            }
+            catch (MySqlException e)
+            {
+                log.Error(e.Message, e);
+                throw new Exception("Errore durante la modificata del dato");
+            }
         }
 
-        public static bool UpdateStorages(StorageModel updateStorage)
+        public static void UpdateStorages(StorageModel updateStorage)
         {
-            String query = "UPDATE [OrganizeMySelf].[dbo].[Storage] " +
-                "SET date=@Date,id_type=@Id_Type,inside=@Inside,cash=@Cash " +
+            String query = "UPDATE OrganizeMySelf.Storage " +
+                "SET date=@Date,id_type=@Id_Type,inside=@Inside,cash=@Cash,descrizione=@Descrizione " +
                 "WHERE id=@Id";
-            SqlParameter[] parameters = [
-                    new SqlParameter("@Id", updateStorage.Id),
-                    new SqlParameter("@Date", updateStorage.Date),
-                    new SqlParameter("@Id_Type", updateStorage.Type.Id),
-                    new SqlParameter("@Inside", updateStorage.Inside),
-                    new SqlParameter("@Cash", updateStorage.Cash),
+            MySqlParameter[] parameters = [
+                    new MySqlParameter("@Id", updateStorage.Id),
+                    new MySqlParameter("@Date", updateStorage.Date),
+                    new MySqlParameter("@Id_Type", updateStorage.Type.Id),
+                    new MySqlParameter("@Inside", updateStorage.Inside),
+                    new MySqlParameter("@Cash", updateStorage.Cash),
+                    new MySqlParameter("@Descrizione", updateStorage.Descrizione),
                 ];
-            StorageModel storage = null;
-            if (SqlHelper.ExecuteNonQuery(query, CommandType.Text, parameters) >= 1)
-            {
-                return true;
-            }
-            return false;
+            int row = SqlHelper.ExecuteNonQuery(query, CommandType.Text, parameters);
+            if (row <= 0) throw new Exception("Errore durante l'update dello Storage");
         }
-
-        public static bool DeleteStorages(int id)
+        #endregion
+        public static void DeleteStorages(int id)
         {
-            String query = "DELETE FROM [OrganizeMySelf].[dbo].[Storage] " +
-                "WHERE id = @Id";
-            SqlParameter parameter = new SqlParameter("@Id", id);
-            if (SqlHelper.ExecuteNonQuery(query, CommandType.Text, parameter) >= 1)
+            try
             {
-                return true;
+                deleteStorages(id);
             }
-            return false;
+            catch (MySqlException e)
+            {
+                log.Error(e.Message, e);
+                throw new Exception("Errore durante l'eliminazione del dato");
+            }
+        }
+        public static void deleteStorages(int id)
+        {
+            String query = "DELETE FROM OrganizeMySelf.Storage " +
+                "WHERE id = @Id";
+            MySqlParameter parameter = new MySqlParameter("@Id", id);
+            int row = SqlHelper.ExecuteNonQuery(query, CommandType.Text, parameter);
+            if (row <= 0) throw new Exception("Errore durante l'eliminazione dello Storage");
         }
     }
 }

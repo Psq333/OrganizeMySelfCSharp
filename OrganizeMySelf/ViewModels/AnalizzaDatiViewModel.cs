@@ -19,8 +19,8 @@ namespace OrganizeMySelf.ViewModels
         public ObservableCollection<StorageModel> Items { get; set; }
         public String Totale { get; set; }
         private TypeModel _selectedType; 
-        public Decimal Positive { get; set; }
-        public Decimal Negative { get; set; }
+        public Double Positive { get; set; }
+        public Double Negative { get; set; }
 
         public AnalizzaDatiViewModel(List<StorageModel> Items, List<TypeModel> types)
         {
@@ -36,7 +36,7 @@ namespace OrganizeMySelf.ViewModels
         {
             Positive = (from it in Items where it.Inside == InsideStorage.Inside select it.Cash).Sum();
             Negative = (from it in Items where it.Inside == InsideStorage.Outside select it.Cash).Sum();
-            Decimal total = Positive - Negative;
+            Double total = Positive - Negative;
             return "Totale " + total.ToString() + "€";
         }
 

@@ -27,17 +27,19 @@ namespace OrganizeMySelf.ViewModels
         private DateTime startDate;
         private DateTime endDate;
         private List<TypeModel> types;
-        public MainWindowViewModel(int v)
+        public MainWindowViewModel()
         {
+            types = HTTPRequest<TypeModel>.Request(PathClass.Path, PathClass.Type, Method.Get, null);
+
+
             AggiungiCommand = new RelayCommand(AggiungiMethod);
             EliminaCommand = new RelayCommand(EliminaMethod, EliminaCanExec);
             ModificaCommand = new RelayCommand(ModificaMethod, ModificaCanExec);
             AnalizzaCommand = new RelayCommand(AnalizzaMethod);
             CategoriaCommand = new RelayCommand(CategoriaMethod);
 
-            types = HTTPRequest<TypeModel>.Request(PathClass.Path, PathClass.Type, Method.Get, null);
-
-            storage = HTTPRequest<StorageModel>.Request(PathClass.Path, PathClass.Storage, Method.Get, null);
+            storage = (List<StorageModel>)HTTPRequest<StorageModel>.Request(PathClass.Path, PathClass.Storage, Method.Get, null)
+                .OrderBy(e => e.Date).ToList();
 
             Items = new ObservableCollection<StorageModel>();
             StartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
@@ -71,7 +73,9 @@ namespace OrganizeMySelf.ViewModels
         private void AggiungiMethod(object param)
         {
             Notify();
-            var storageAddViewModel = new StorageAddViewModel(null,types);
+            var storageAddViewModel = new StorageAddViewModel(null,null);
+            if (types != null)
+                storageAddViewModel  = new StorageAddViewModel(null,types);
             storageAddViewModel.ElementoAggiunto += OnElementoAggiunto;
             StorageVM = storageAddViewModel;
             Notify(nameof(StorageVM));
@@ -79,7 +83,9 @@ namespace OrganizeMySelf.ViewModels
 
         private void EliminaMethod(object param)
         {
-            Items.Remove(selectedItem);
+            bool read = HTTPRequest<StorageModel>.RequestDelete(PathClass.Path, PathClass.Storage, Method.Delete,SelectedItem.Id);
+            if(read == true)
+                Items.Remove(selectedItem);
         }
 
         private bool EliminaCanExec(object param)
@@ -145,11 +151,19 @@ namespace OrganizeMySelf.ViewModels
         private void FilteredItem()
         {
             Items.Clear();
-            ObservableCollection<StorageModel> tmp = new ObservableCollection<StorageModel>(storage);
+            ObservableCollection<StorageModel> tmp = new ObservableCollection<StorageModel>();
+            if (storage != null)
+                tmp = new ObservableCollection<StorageModel>(storage);
             IEnumerable<StorageModel> ienum = from item in tmp
                                               where item.Date >= StartDate && item.Date <= EndDate
                                               select item;
-            foreach (StorageModel item in ienum) Items.Add(item);
+            foreach (StorageModel item in ienum)
+            {
+                if (Items.Count != 0 && item.Date.Month != Items.Last().Date.Date.Month)
+                    Items.Add(new StorageModel()
+                    );
+                Items.Add(item);
+            }
         }
 
         private void AnalizzaMethod(object param)

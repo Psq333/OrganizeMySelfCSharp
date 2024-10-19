@@ -20,7 +20,7 @@ namespace OrganizeMySelf
             base.OnStartup(e);
 
             this.MainWindow = new MainWindowView();
-            this.MainWindow.DataContext = new MainWindowViewModel(1);
+            this.MainWindow.DataContext = new MainWindowViewModel();
             //Con la riga di sopra divido il ponte di comunicazioe tra la view e il model
             this.MainWindow.Show();
         }

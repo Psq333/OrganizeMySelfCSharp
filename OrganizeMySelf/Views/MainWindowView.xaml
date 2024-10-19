@@ -5,9 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OrganizeMySelf.Views"
         xmlns:vm="clr-namespace:OrganizeMySelf.ViewModels"
+        xmlns:y="clr-namespace:OrganizeMySelf.Models"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         d:DataContext="{d:DesignInstance vm:MainWindowViewModel}">
+
+    <Window.Resources>
+        <local:BoolToBrushConverter x:Key="BoolToBrush" />
+        <local:VisibilityConverter x:Key="VisibilityConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition MinWidth="200" Width="auto"/>
@@ -26,8 +32,8 @@
         <StackPanel Grid.Column="0" Grid.Row="1">
             <TextBlock Text="List Storage"  Margin="8" />
 
-            <ListBox  ItemsSource="{Binding Path=Items}" Height="280" MaxHeight="280"
-                     SelectedItem="{Binding Path=SelectedItem}" Margin="8">
+            <ListBox ItemsSource="{Binding Path=Items}" Height="280" MaxHeight="280"
+         SelectedItem="{Binding Path=SelectedItem}" Margin="8">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -35,16 +41,28 @@
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Background="{Binding Path=Colore}">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel.Background>
+                                <!-- MultiBinding per combinare Inside e OnlyDate -->
+                                <MultiBinding Converter="{StaticResource ResourceKey=BoolToBrush}">
+                                    <Binding Path="Inside"/>
+                                    <Binding Path="Id"/>
+                                </MultiBinding>
+                            </StackPanel.Background>
+
+                            <WrapPanel Visibility="{Binding Path=Id, Converter={StaticResource VisibilityConverter}}">
                             <TextBlock Text="{Binding Path=OnlyDate}" Margin="4,0,0,0"/>
                             <TextBlock Text=" - "/>
                             <TextBlock Text="{Binding Path=Inside}"/>
                             <TextBlock Text=" - "/>
                             <TextBlock Text="{Binding Path=Cash}"/>
+                            </WrapPanel>
+                            <TextBlock Text="  "/>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+
         </StackPanel>
 
         <ContentControl Grid.Column="1" Grid.Row="1" Margin="4" VerticalAlignment="Top"

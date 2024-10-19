@@ -24,6 +24,7 @@
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Column="0" Grid.Row="0" Text="Id" />
@@ -36,5 +37,7 @@
         <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Path=Inside}" />
         <TextBlock Grid.Column="0" Grid.Row="4" Text="Cash" />
         <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding Path=Cash}" />
+        <TextBlock Grid.Column="0" Grid.Row="5" Text="Description" />
+        <TextBlock Grid.Column="1" Grid.Row="5" Text="{Binding Path=Descrizione}" />
     </Grid>
 </UserControl>

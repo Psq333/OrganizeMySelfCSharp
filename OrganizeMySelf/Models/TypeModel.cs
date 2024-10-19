@@ -1,22 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace OrganizeMySelf.Models
+public class TypeModel
 {
-    public class TypeModel
-    {
-        public int Id { get; set; }
-        public string Type { get; set; }
+    public int Id { get; set; }
+    public string Type { get; set; }
 
-        public TypeModel(int id, string type)
+    public override bool Equals(object obj)
+    {
+        if (obj is TypeModel other)
         {
-            Id = id;
-            Type = type;
-        } 
-        
-        public TypeModel() { }
+            return Id == other.Id && Type == other.Type;
+        }
+        return false;
     }
+
+    public override int GetHashCode()
+    {
+        try
+        {
+            int hash = 17;
+            hash = hash * 23 + Id.GetHashCode();
+            hash = hash * 23 + (Type?.GetHashCode() ?? 0);
+            return hash;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in GetHashCode: {ex.Message}");
+            throw;
+        }
+    }
+
+
 }

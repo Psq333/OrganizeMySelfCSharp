@@ -60,12 +60,22 @@ namespace OrganizeMySelf.ViewModels
             }
         }
 
-        public decimal Cash
+        public Double Cash
         {
             get => _storageModel.Cash;
             set
             {
                 _storageModel.Cash = value;
+                Notify();
+            }
+        }
+
+        public String Descrizione
+        {
+            get => _storageModel.Descrizione;
+            set
+            {
+                _storageModel.Descrizione = value;
                 Notify();
             }
         }

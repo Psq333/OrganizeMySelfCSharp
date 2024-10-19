@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using MySqlConnector;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -11,15 +11,17 @@ namespace SqlCommandExample.Utilities
     class SqlHelper
     {
 
-        public static String connectionString = "Data Source=(local);Initial Catalog=OrganizeMySelf; User Id=sa;Password=Smartpaper2024!;";
+        //public static String connectionString = "Server=192.168.1.50; Port = 3306; Database=OrganizeMySelf; User Id=root;Password=root;";
+        //public static String connectionStringInLocalPC = "Data Source=(local);Initial Catalog=OrganizeMySelf; User Id=psq378;Password=Pasquale2024;";
+        public static String connectionStringInLocalRaspberry = "Server=localhost;Database=OrganizeMySelf;User Id=root;Password=root;\r\n";
 
         // Set the connection, command, and then execute the command with non query.
         public static Int32 ExecuteNonQuery(String commandText,
-            CommandType commandType, params SqlParameter[] parameters)
+            CommandType commandType, params MySqlParameter[] parameters)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (MySqlConnection conn = new MySqlConnection(connectionStringInLocalRaspberry))
             {
-                using (SqlCommand cmd = new SqlCommand(commandText, conn))
+                using (MySqlCommand cmd = new MySqlCommand(commandText, conn))
                 {
                     // There're three command types: StoredProcedure, Text, TableDirect. The TableDirect
                     // type is only for OLE DB.
@@ -34,11 +36,11 @@ namespace SqlCommandExample.Utilities
 
         // Set the connection, command, and then execute the command and only return one value.
         public static Object ExecuteScalar(String commandText,
-            CommandType commandType, params SqlParameter[] parameters)
+            CommandType commandType, params MySqlParameter[] parameters)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (MySqlConnection conn = new MySqlConnection(connectionStringInLocalRaspberry))
             {
-                using (SqlCommand cmd = new SqlCommand(commandText, conn))
+                using (MySqlCommand cmd = new MySqlCommand(commandText, conn))
                 {
                     cmd.CommandType = commandType;
                     cmd.Parameters.AddRange(parameters);
@@ -50,12 +52,12 @@ namespace SqlCommandExample.Utilities
         }
 
         // Set the connection, command, and then execute the command with query and return the reader.
-        public static SqlDataReader ExecuteReader(String commandText,
-            CommandType commandType, params SqlParameter[] parameters)
+        public static MySqlDataReader ExecuteReader(String commandText,
+            CommandType commandType, params MySqlParameter[] parameters)
         {
-            SqlConnection conn = new SqlConnection(connectionString);
+            MySqlConnection conn = new MySqlConnection(connectionStringInLocalRaspberry);
 
-            using (SqlCommand cmd = new SqlCommand(commandText, conn))
+            using (MySqlCommand cmd = new MySqlCommand(commandText, conn))
             {
                 cmd.CommandType = commandType;
                 cmd.Parameters.AddRange(parameters);
@@ -63,7 +65,7 @@ namespace SqlCommandExample.Utilities
                 conn.Open();
                 // When using CommandBehavior.CloseConnection, the connection will be closed when the
                 // IDataReader is closed.
-                SqlDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                MySqlDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
 
                 return reader;
             }

@@ -25,6 +25,7 @@ namespace OrganizeMySelf.ViewModels
             ItemsType = types;
         }
 
+        public StorageModel StorageModel { get { return _storageModel; } }
         public List<TypeModel> ItemsType { get; set; }
         public List<InsideStorage> ItemsInside { get; set; }
         public int Id
@@ -67,12 +68,22 @@ namespace OrganizeMySelf.ViewModels
             }
         }
 
-        public decimal Cash
+        public Double Cash
         {
             get =>  _storageModel.Cash;
             set
             {
                 _storageModel.Cash = value;
+                Notify();
+            }
+        }
+
+        public String Descrizione
+        {
+            get => _storageModel.Descrizione;
+            set
+            {
+                _storageModel.Descrizione = value;
                 Notify();
             }
         }
@@ -93,7 +104,8 @@ namespace OrganizeMySelf.ViewModels
                 Type = Type,
                 Cash = Cash,
                 Date = Date,
-                Inside = Inside
+                Inside = Inside,
+                Descrizione = Descrizione
             };
             ElementoModificato?.Invoke(storage);
         }

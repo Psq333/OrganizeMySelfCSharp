@@ -1,15 +1,14 @@
 ﻿using OrganizeMySelfAPI.Models;
 using OrganizeMySelfAPI.DAL;
-using SqlCommandExample.Utilities;
-using System.Data.SqlClient;
-using System.Data;
 
 namespace OrganizeMySelfAPI.BLL
 {
     public class StorageBLL
     {
 
-        public static List<StorageModel> GetStorages() { return StorageDAL.GetStorages(); }
+        public static List<StorageModel> GetStorages() { 
+            return StorageDAL.GetStorages(); 
+        }
 
         public static StorageModel GetStorage(int id)
         {
@@ -21,14 +20,14 @@ namespace OrganizeMySelfAPI.BLL
            return StorageDAL.InsertStorages(insertStorage);
         }
 
-        public static bool UpdateStorages(StorageModel insertStorage)
+        public static void UpdateStorages(StorageModel insertStorage)
         {
-            return StorageDAL.UpdateStorages(insertStorage);
+            StorageDAL.UpdateStorages(insertStorage);
         }
 
-        public static bool DeleteStorages(int id)
+        public static void DeleteStorages(int id)
         {
-            return StorageDAL.DeleteStorages(id);
+            StorageDAL.DeleteStorages(id);
         }
     }
 }

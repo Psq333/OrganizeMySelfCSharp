@@ -12,7 +12,8 @@ namespace OrganizeMySelfAPI.Models
         public DateTime Date { get; set; }
         public TypeModel Type { get; set; }
         public InsideStorage Inside {  get; set; }
-        public decimal Cash { get; set; }
+        public Double Cash { get; set; }
+        public String Descrizione { get; set; }
 
         public override string ToString()
         {
